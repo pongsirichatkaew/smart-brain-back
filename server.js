@@ -3,28 +3,49 @@ const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt-nodejs');
 const cors = require('cors');
 const knex = require('knex');
+const knex2 = require('knex')({
+  // connect to your own database here:
+  client: 'pg',
+  // connection: process.env.POSTGRES_URI,
+  connection: 'postgres://sally:secret@localhost:5435/smart-brain-docker',
+  debug: true,
+});
 const morgan = require('morgan');
 const register = require('./controllers/register');
 const signin = require('./controllers/signin');
 const profile = require('./controllers/profile');
 const image = require('./controllers/image');
 
-console.log('process.env.POSTGRES_USER', process.env.POSTGRES_USER);
+console.log('process.env.POSTGRES_HOST', process.env.POSTGRES_HOST);
 const db = knex({
   // connect to your own database here:
   client: 'pg',
   connection: process.env.POSTGRES_URI,
+  // connection: 'postgres://sally:secret@localhost:5435/smart-brain-docker',
+  // host: process.env.POSTGRES_HOST,
+  // user: process.env.POSTGRES_USER,
+  // password: process.env.POSTGRES_PASSWORD,
+  // database: process.env.POSTGRES_DB,
+  debug: true,
 });
 
 const app = express();
-console.log('test');
 app.use(morgan('combined'));
 app.use(cors());
 app.use(express.json());
 app.get('/health', (req, res) => {
-  res.send({ health: 'work' });
+  res.send({ health: 'work2' });
 });
 app.get('/', (req, res) => {
+  console.log('called');
+  db.select('*')
+    .from('users')
+    .then((res) => {
+      console.log('res', res);
+    })
+    .catch((error) => {
+      console.log('error', error);
+    });
   res.send(db.users);
 });
 app.post('/signin', signin.handleSignin(db, bcrypt));
