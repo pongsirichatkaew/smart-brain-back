@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt-nodejs');
 const cors = require('cors');
 const knex = require('knex');
+const compression = require('compression');
 const knex2 = require('knex')({
   // connect to your own database here:
   client: 'pg',
@@ -30,6 +31,7 @@ const db = knex({
 });
 
 const app = express();
+app.use(compression());
 app.use(morgan('combined'));
 app.use(cors());
 app.use(express.json());
