@@ -13,16 +13,19 @@ services:
       POSTGRES_PASSWORD: secret
       POSTGRES_DB: smart-brain-docker
       POSTGRES_HOST: host.docker.internal
-    # links:
-    #   - postgres
+      REDIS_URI: redis://redis:6379
+    links:
+      - postgres
+      - redis
     ports:
       - '3000:3000'
     volumes:
       - ./:/usr/src/smart-brain-api
+    # network_mode: "host"
 
   # Postgres
   postgres:
-    # container_name: postgres
+    container_name: postgres
     build: ./postgres
     ports:
       - '5435:5432'
@@ -31,3 +34,10 @@ services:
       POSTGRES_PASSWORD: secret
       POSTGRES_DB: smart-brain-docker
       POSTGRES_HOST: postgres
+
+  #Redis
+  redis:
+    container_name: redis
+    image: redis
+    ports:
+      - '6379:6379'
